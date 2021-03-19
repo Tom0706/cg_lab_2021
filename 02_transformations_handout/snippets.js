@@ -28,10 +28,19 @@ viewMatrix = lookAt(0,3,5,  //eye
                     0,1,0); // up
 
 // TASK 6
-projectionMatrix = makeOrthographicProjectionMatrix(-0.5, 0.5, -0.5, 0.5, 0, 10);
+//projectionMatrix = makeOrthographicProjectionMatrix(-0.5, 0.5, -0.5, 0.5, 0, 10);
 
 // TASK 7
 projectionMatrix = makePerspectiveProjectionMatrix(fieldOfViewInRadians, canvasWidth/canvasHeight, 1, 10);
+
+  gl.uniformMatrix4fv(projectionLocation, false, projectionMatrix);
+
+  var sceneMatrix = makeIdentityMatrix();
+  var viewMatrix = calculateViewMatrix(makeIdentityMatrix());
+  setUpModelViewMatrix(viewMatrix, sceneMatrix);
+
+  renderQuad(sceneMatrix, viewMatrix);
+
 
 // TASK 8
 //  8-1 main.js > init

@@ -112,6 +112,7 @@ function init(resources) {
 
   // TASK 8-1
   //set buffers for cube
+  initCubeBuffer();
 }
 
 function initQuadBuffer() {
@@ -163,8 +164,12 @@ function render(timeInMilliseconds) {
 
   var projectionMatrix = defaultProjectionMatrix;
   // TASK 6
+  projectionMatrix = makeOrthographicProjectionMatrix(-0.5, 0.5, -0.5, 0.5, 0, 10);
 
   // TASK 7
+
+  projectionMatrix = makePerspectiveProjectionMatrix(fieldOfViewInRadians, canvasWidth/canvasHeight, 1,10);
+
 
   gl.uniformMatrix4fv(projectionLocation, false, projectionMatrix);
 
@@ -175,7 +180,7 @@ function render(timeInMilliseconds) {
   renderQuad(sceneMatrix, viewMatrix);
 
   // TASK 8-2
-
+  renderRobot(sceneMatrix, viewMatrix);
   //request another render call as soon as possible
   requestAnimationFrame(render);
 
@@ -185,7 +190,10 @@ function render(timeInMilliseconds) {
 function renderQuad(sceneMatrix, viewMatrix) {
 
   //TASK 2-2 and TASK 3 and TASK 4
-
+  sceneMatrix = matrixMultiply(sceneMatrix, makeXRotationMatrix(convertDegreeToRadians(45))); // zum Schluss 3 applied
+  sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(0,-0.5,0)); // does the same translation 2
+  sceneMatrix = matrixMultiply(sceneMatrix, makeScaleMatrix(0.5,0.5, 1)); // wenn vorher sein soll, dann muss es danach kommen 1
+  
   setUpModelViewMatrix(viewMatrix, sceneMatrix);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, quadVertexBuffer);
@@ -220,10 +228,11 @@ function renderRobot(sceneMatrix, viewMatrix) {
   var originSceneMatrix = sceneMatrix;
 
   // TASK 9 and 10
+  sceneMatrix = matrixMultiply(sceneMatrix, makeYRotationMatrix(convertDegreeToRadians(animatedAngle)));
 
   setUpModelViewMatrix(viewMatrix, sceneMatrix);
   // TASK 8-3
-
+  renderCube();
   // TASK 10-1
 
 }
@@ -236,6 +245,11 @@ function renderCube() {
 function calculateViewMatrix(viewMatrix) {
   //compute the camera's matrix
   // TASK 5
+
+  viewMatrix = lookAt(0,3,5,  //eye
+    0,0,0,  // origin
+    0,1,0); // up
+
   return viewMatrix;
 }
 
