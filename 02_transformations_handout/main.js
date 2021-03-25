@@ -223,18 +223,55 @@ function renderRobot(sceneMatrix, viewMatrix) {
   gl.enableVertexAttribArray(colorLocation);
 
   // TASK 10-2
+  sceneMatrix = matrixMultiply(sceneMatrix, makeYRotationMatrix(convertDegreeToRadians(animatedAngle/2)));
+  sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(0.5,0.9,0));
 
   // store current sceneMatrix in originSceneMatrix, so it can be restored
   var originSceneMatrix = sceneMatrix;
 
   // TASK 9 and 10
   sceneMatrix = matrixMultiply(sceneMatrix, makeYRotationMatrix(convertDegreeToRadians(animatedAngle)));
+  sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(0.0,0.4,0));
+  sceneMatrix = matrixMultiply(sceneMatrix, makeScaleMatrix(0.4,0.33,0.5));
 
   setUpModelViewMatrix(viewMatrix, sceneMatrix);
   // TASK 8-3
   renderCube();
   // TASK 10-1
 
+    //body
+    sceneMatrix = originSceneMatrix;
+    setUpModelViewMatrix(viewMatrix, sceneMatrix);
+    renderCube();
+
+    // right leg
+    sceneMatrix = originSceneMatrix;
+    sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(0.16,-0.6,0));
+    sceneMatrix = matrixMultiply(sceneMatrix, makeScaleMatrix(0.2,1,1));
+    setUpModelViewMatrix(viewMatrix, sceneMatrix);
+    renderCube();
+
+    //left leg
+
+    sceneMatrix = originSceneMatrix;
+    sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(-0.16,-0.6,0));
+    sceneMatrix = matrixMultiply(sceneMatrix, makeScaleMatrix(0.2,1,1));
+    setUpModelViewMatrix(viewMatrix, sceneMatrix);
+    renderCube();
+
+    //arm
+
+    sceneMatrix = originSceneMatrix;
+    sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(0.5,0,0));
+    sceneMatrix = matrixMultiply(sceneMatrix, makeScaleMatrix(1,0.2,1));
+    setUpModelViewMatrix(viewMatrix, sceneMatrix);
+    renderCube();
+
+    sceneMatrix = originSceneMatrix;
+    sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(-0.5,0,0));
+    sceneMatrix = matrixMultiply(sceneMatrix, makeScaleMatrix(1,0.2,1));
+    setUpModelViewMatrix(viewMatrix, sceneMatrix);
+    renderCube();
 }
 
 function renderCube() {
