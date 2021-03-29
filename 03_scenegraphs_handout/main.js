@@ -19,6 +19,11 @@ var aspectRatio = canvasWidth / canvasHeight;
 
 var context;
 
+var robotTransformationNode;
+var headTransformationNode;
+var rightArmTransformationNode;
+var leftArmTransformationNode;
+
 //camera and projection settings
 var animatedAngle = 0;
 var fieldOfViewInRadians = convertDegreeToRadians(30);
@@ -113,16 +118,18 @@ function init(resources) {
   var quadTransformNode = new TransformationSceneGraphNode(qtm);
   rootNode.append(quadTransformNode);
   //TASK 5-4
-
+var staticColorShaderNode = new ShaderSceneGraphNode(createProgram(gl, resources.staticcolorvs, resources.fs));
+quadTransformNode.append(staticColorShaderNode);
   //TASK 2-2
 
   var quadNode = new QuadRenderNode();
-  quadTransformNode.append(quadNode);
+  staticColorShaderNode.append(quadNode);
 
   //TASK 4-2
-var cubeNode = new CubeRenderNode();
-rootNode.append(cubeNode);
-  createRobot(rootNode);
+//var cubeNode = new CubeRenderNode();
+//rootNode.append(cubeNode);
+  
+createRobot(rootNode);
 }
 
 function initQuadBuffer() {
@@ -157,6 +164,75 @@ function initCubeBuffer() {
 function createRobot(rootNode) {
 
   //TASK 6-1
+  // transformatuins on whole body
+  var rtm = mat4.multiply(mat4.create(), mat4.create(), glm.rotateY(animatedAngle/2));
+  rtm = mat4.multiply(mat4.create(), rtm, glm.translate(0.3,0.9,0));
+
+
+  robotTransformationNode = new TransformationSceneGraphNode(rtm);
+  rootNode.append(robotTransformationNode);
+
+  var bodyNode = new CubeRenderNode();
+  robotTransformationNode.append(bodyNode);
+
+  //head
+  var htm = mat4.multiply(mat4.create(), mat4.create(), glm.rotateY(animatedAngle));
+  htm = mat4.multiply(mat4.create(), htm, glm.translate(0.0,0.4,0));
+  htm = mat4.multiply(mat4.create(), htm, glm.scale(0.4,0.33,0.5));
+
+  headTransformationNode = new TransformationSceneGraphNode(htm);
+  robotTransformationNode.append(headTransformationNode);
+
+  var headNode = new CubeRenderNode();
+  headTransformationNode.append(headNode);
+
+  // Right Arm
+
+  var ram = mat4.multiply(mat4.create(), mat4.create(), glm.translate(0.5,0,0));
+  ram = mat4.multiply(mat4.create(), ram, glm.scale(1,0.2,1));
+
+  rightArmTransformationNode = new TransformationSceneGraphNode(ram);
+  robotTransformationNode.append(rightArmTransformationNode);
+
+  var rightArmNode = new CubeRenderNode();
+  rightArmTransformationNode.append(rightArmNode);
+
+  // Left Arm
+
+  var lam = mat4.multiply(mat4.create(), mat4.create(), glm.translate(-0.5,0,0));
+  lam = mat4.multiply(mat4.create(), lam, glm.scale(1,0.2,1));
+
+  leftArmTransformationNode = new TransformationSceneGraphNode(lam);
+  robotTransformationNode.append(leftArmTransformationNode);
+
+  var leftArmNode = new CubeRenderNode();
+  leftArmTransformationNode.append(leftArmNode);
+
+  /*var lam = originSceneMatrix;
+  sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(-0.5,0,0));
+  sceneMatrix = matrixMultiply(sceneMatrix, makeScaleMatrix(1,0.2,1));
+  setUpModelViewMatrix(viewMatrix, sceneMatrix);
+  renderCube();
+ */
+  // left leg
+  var lltm = mat4.multiply(mat4.create(), mat4.create(), glm.translate(0.16,-0.6,0));
+  lltm = mat4.multiply(mat4.create(), lltm, glm.scale(0.2,1,1));
+
+  var leftLegTransformationNode = new TransformationSceneGraphNode(lltm);
+  robotTransformationNode.append(leftLegTransformationNode);
+
+  var leftLegNode = new CubeRenderNode();
+  leftLegTransformationNode.append(leftLegNode);
+
+  //right leg
+  rltm = mat4.multiply(mat4.create(), mat4.create(), glm.translate(-0.16,-0.6,0));
+  rltm = mat4.multiply(mat4.create(), rltm, glm.scale(0.2,1,1));
+
+  var rightlegTransformationNode = new TransformationSceneGraphNode(rltm);
+  robotTransformationNode.append(rightlegTransformationNode);
+
+  var rightLegNode = new CubeRenderNode();
+  rightlegTransformationNode.append(rightLegNode);
 }
 
 /**
@@ -181,6 +257,25 @@ gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   gl.useProgram(shaderProgram);
 
   //TASK 6-2
+
+  var rtm = mat4.multiply(mat4.create(), mat4.create(), glm.rotateY(animatedAngle/2));
+  rtm = mat4.multiply(mat4.create(), rtm, glm.translate(0.3,0.9,0));
+  robotTransformationNode.setMatrix(rtm);
+
+  var htm = mat4.multiply(mat4.create(), mat4.create(), glm.rotateY(animatedAngle));
+  htm = mat4.multiply(mat4.create(), htm, glm.translate(0.0,0.4,0));
+  htm = mat4.multiply(mat4.create(), htm, glm.scale(0.4,0.33,0.5));
+  headTransformationNode.setMatrix(htm);
+
+  var ram = mat4.multiply(mat4.create(), mat4.create(), glm.rotateX(animatedAngle));
+  ram = mat4.multiply(mat4.create(), ram, glm.translate(0.6,0,0));
+  ram = mat4.multiply(mat4.create(), ram, glm.scale(1,0.2,1));
+  rightArmTransformationNode.setMatrix(ram);
+
+  var lam = mat4.multiply(mat4.create(), mat4.create(), glm.rotateX(animatedAngle));
+  lam = mat4.multiply(mat4.create(), lam, glm.translate(-0.6,0,0));
+  lam = mat4.multiply(mat4.create(), lam, glm.scale(1,0.2,1));
+  leftArmTransformationNode.setMatrix(lam);
 
   context = createSceneGraphContext(gl, shaderProgram);
 
